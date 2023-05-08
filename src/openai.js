@@ -31,7 +31,9 @@ class OpenAI {
             timeoutErrorMessage: 'Timeout error 180 000',
           }
         )
-        .catch((err) => console.log('wtf', err))
+        .catch((err) =>
+          console.log('Error when creating chat completion:', err)
+        )
 
       console.log('Usage', completion.data.usage)
 
