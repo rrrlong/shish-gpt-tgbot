@@ -39,7 +39,7 @@ class OggConverter {
         stream.on('finish', () => resolve(oggPath))
       })
     } catch (e) {
-      console.error('Error while creating ogg file...', err.message)
+      console.error('Error while creating ogg file: ', err.message)
     }
   }
 }

@@ -1,6 +1,6 @@
 {
-  "TELEGRAM_TOKEN": "rewrite and add to gitignore",
-  "OPEN_AI_KEY": "",
+  "TELEGRAM_TOKEN": "6150438328:AAH1-FQQO6F1fLLlDJqNpyHhd-jYmgrgd4M",
+  "OPEN_AI_KEY": "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",
   "ADMIN_TG_ID": "",
   "MONGO_URI": ""
 }

@@ -1,12 +1,12 @@
 import { Telegraf, session } from 'telegraf'
 import { message } from 'telegraf/filters'
 import config from 'config'
-import mongoose from 'mongoose'
+// import mongoose from 'mongoose'
 import {
   proccessVoiceMessage,
   proccessTextMessage,
-  handleCallbackQuery,
-  getUserConversations,
+  // handleCallbackQuery,
+  // getUserConversations,
 } from './logic.js'
 import { initCommand, normalize } from './utils.js'
 
@@ -27,37 +27,38 @@ bot.command(
   )
 )
 
-bot.command('history', getUserConversations)
+// bot.command('history', getUserConversations)
 
-bot.command('admin', async (ctx) => {
-  if (ctx.message.from.id !== config.get('ADMIN_TG_ID')) return
-  await ctx.reply('Привет Владилен')
-})
+// bot.command('admin', async (ctx) => {
+//   if (ctx.message.from.id !== config.get('ADMIN_TG_ID')) return
+//   await ctx.reply('Shish')
+// })
 
 bot.on(message('voice'), proccessVoiceMessage)
 
 bot.on(message('text'), proccessTextMessage)
 
-bot.on('callback_query', handleCallbackQuery)
+// bot.on('callback_query', handleCallbackQuery)
 
 async function start() {
   try {
-    await mongoose.connect(config.get('MONGO_URI'), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
+    //TODO: MAY BY NO
+    // await mongoose.connect(config.get('MONGO_URI'), {
+    //   useNewUrlParser: true,
+    //   useUnifiedTopology: true,
+    // })
 
-    bot.launch()
+    bot.launch() //TODO: CHECK IT
 
-    console.log('MongoDB Connected and bot started.')
+    // console.log('MongoDB Connected and bot started.')
 
     process.on('uncaughtException', (err) => {
-      console.error('Неперехваченное исключение:', err)
+      console.error('Неперехваченное исключение: ', err)
       process.exit(1)
     })
 
     process.on('unhandledRejection', (reason, promise) => {
-      console.error('Неперехваченное отклонение промиса:', reason, promise)
+      console.error('Неперехваченное отклонение промиса: ', reason, promise)
     })
 
     process.once('SIGINT', () => bot.stop('SIGINT'))

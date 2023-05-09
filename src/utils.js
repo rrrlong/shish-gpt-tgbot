@@ -25,7 +25,7 @@ export const gptMessage = (content, role = 'user') => ({
 
 export const emptySession = () => ({
   messages: [],
-  conversations: [],
+  // conversations: [],
 })
 
 export function initCommand(message) {

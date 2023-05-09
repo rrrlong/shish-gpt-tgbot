@@ -2,7 +2,7 @@ import { Configuration, OpenAIApi } from 'openai'
 import { createReadStream } from 'fs'
 import config from 'config'
 
-const CHAT_GPT_MODEL = 'gpt-4'
+const CHAT_GPT_MODEL = 'gpt-3.5-turbo'
 
 class OpenAI {
   roles = {
@@ -56,6 +56,7 @@ class OpenAI {
   }
 
   async image(prompt = 'a white siamese cat') {
+    //TODO: create command and UX
     const response = await this.openai.createImage({
       prompt,
       n: 1,

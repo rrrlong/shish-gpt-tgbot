@@ -1,13 +1,14 @@
-import { bold, code } from 'telegraf/format'
+import { Telegraf } from 'telegraf'
+import { code } from 'telegraf/format'
 import { openai } from './openai.js'
 import { ogg } from './ogg.js'
 import {
   gptMessage,
   removeFile,
-  emptySession,
-  printConversation,
+  // emptySession,
+  // printConversation,
 } from './utils.js'
-import { mongo } from './mongo.js'
+// import { mongo } from './mongo.js'
 
 export async function proccessVoiceMessage(ctx) {
   try {
@@ -25,9 +26,9 @@ export async function proccessVoiceMessage(ctx) {
     await proccessGPTResponse(ctx, text)
   } catch (e) {
     await ctx.reply(
-      `Ошибка с API. Скажи @rrrshish, чтоб пофиксил. ${e.message}`
+      `Ошибка с API. Скажи @rrrshish, чтобы пофиксил: ${e.message}`
     )
-    console.error(`Error while proccessing voice message`, e.message)
+    console.error(`Error while proccessing voice message: `, e.message)
   }
 }
 
@@ -37,51 +38,51 @@ export async function proccessTextMessage(ctx) {
     await proccessGPTResponse(ctx, ctx.message.text)
   } catch (e) {
     await ctx.reply(
-      `Ошибка с API. Скажи Владилену, чтоб пофиксил. ${e.message}`
+      `Ошибка с API. Скажи @rrrshish, чтобы пофиксил: ${e.message}`
     )
-    console.error(`Error while proccessing text message`, e.message)
+    console.error(`Error while proccessing text message: `, e.message)
   }
 }
 
-export async function handleCallbackQuery(ctx) {
-  try {
-    if (ctx.update.callback_query.data === 'save_conversation') {
-      const user = await mongo.createOrGetUser(ctx.update.callback_query.from)
-      await mongo.saveConversation(ctx.session.messages, user._id)
-      ctx.session = emptySession()
-      await ctx.reply('Переписка сохранена и закрыта. Вы можете начать новую.')
-    } else if (ctx.update.callback_query.data.startsWith('conversation')) {
-      const conversationId = ctx.update.callback_query.data.split('-')[1]
-      const conversation = ctx.session.conversations.find(
-        (c) => c._id == conversationId.trim()
-      )
-      await ctx.replyWithHTML(printConversation(conversation))
-    }
-  } catch (e) {
-    console.error(`Error while handling callback query`, e.message)
-  }
-}
+// export async function handleCallbackQuery(ctx) {
+//   try {
+//     if (ctx.update.callback_query.data === 'save_conversation') {
+//       // const user = await mongo.createOrGetUser(ctx.update.callback_query.from)
+//       // await mongo.saveConversation(ctx.session.messages, user._id)
+//       ctx.session = emptySession()
+//       await ctx.reply('Переписка сохранена и закрыта. Вы можете начать новую')
+//     } else if (ctx.update.callback_query.data.startsWith('conversation')) {
+//       const conversationId = ctx.update.callback_query.data.split('-')[1]
+//       const conversation = ctx.session.conversations.find(
+//         (c) => c._id == conversationId.trim()
+//       )
+//       await ctx.replyWithHTML(printConversation(conversation))
+//     }
+//   } catch (e) {
+//     console.error(`Error while handling callback query: `, e.message)
+//   }
+// }
 
-export async function getUserConversations(ctx) {
-  try {
-    const user = await mongo.createOrGetUser(ctx.message.from)
-    const conversations = await mongo.getConversations(user._id)
-    ctx.session.conversations = conversations
+// export async function getUserConversations(ctx) {
+//   try {
+//     const user = await mongo.createOrGetUser(ctx.message.from)
+//     const conversations = await mongo.getConversations(user._id)
+//     ctx.session.conversations = conversations
 
-    await ctx.reply(bold('Ваши переписки:'), {
-      reply_markup: {
-        inline_keyboard: conversations.map((c) => [
-          {
-            text: c.messages[0].content,
-            callback_data: `conversation-${c._id}`,
-          },
-        ]),
-      },
-    })
-  } catch (e) {
-    console.error(`Error while getting conversations`, e.message)
-  }
-}
+//     await ctx.reply(bold('Ваши переписки:'), {
+//       reply_markup: {
+//         inline_keyboard: conversations.map((c) => [
+//           {
+//             text: c.messages[0].content,
+//             callback_data: `conversation-${c._id}`,
+//           },
+//         ]),
+//       },
+//     })
+//   } catch (e) {
+//     console.error(`Error while getting conversations: `, e.message)
+//   }
+// }
 
 async function proccessGPTResponse(ctx, text = '') {
   try {
@@ -93,25 +94,28 @@ async function proccessGPTResponse(ctx, text = '') {
 
     if (!response)
       return await ctx.reply(
-        `Ошибка с API. Скажи @rrrshish, чтоб пофиксил. ${response}`
+        `Ошибка с API. Скажи @rrrshish, чтобы пофиксил: ${response}`
       )
 
     ctx.session.messages.push(
       gptMessage(response.content, openai.roles.ASSISTANT)
     )
 
-    await ctx.reply(response.content, {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: 'Сохранить и закончить переписку?',
-              callback_data: 'save_conversation',
-            },
-          ],
-        ],
-      },
-    })
+    await ctx.reply(
+      response.content
+      // ,{
+      //   reply_markup: {
+      //     inline_keyboard: [
+      //       [
+      //         {
+      //           text: 'Сохранить и закончить переписку?',
+      //           callback_data: 'save_conversation',
+      //         },
+      //       ],
+      //     ],
+      //   },
+      // }
+    )
   } catch (e) {
     console.log(`Error while proccessing gpt response`, e.message)
   }
